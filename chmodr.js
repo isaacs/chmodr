@@ -4,7 +4,7 @@ chmodr.sync = chmodrSync
 var fs = require("fs")
 , path = require("path")
 
-function chmodr (p, mode, cb) {
+function chmodr (p, mode, submode, cb) {
   fs.readdir(p, function (er, children) {
     // any error other than ENOTDIR means it's not readable, or
     // doesn't exist.  give up.
@@ -18,7 +18,7 @@ function chmodr (p, mode, cb) {
     var len = children.length
     var errState = null
     children.forEach(function (child) {
-      chmodr(path.resolve(p, child), mode, then)
+      chmodr(path.resolve(p, child), submode, then)
     })
     function then (er) {
       if (errState) return
@@ -28,7 +28,7 @@ function chmodr (p, mode, cb) {
   })
 }
 
-function chmodrSync (p, mode) {
+function chmodrSync (p, mode, submode) {
   var children
   try {
     children = fs.readdirSync(p)
@@ -39,7 +39,7 @@ function chmodrSync (p, mode) {
   if (!children.length) return fs.chmodSync(p, dirMode(mode))
 
   children.forEach(function (child) {
-    chmodrSync(path.resolve(p, child), mode)
+    chmodrSync(path.resolve(p, child), submode)
   })
   return fs.chmodSync(p, dirMode(mode))
 }
