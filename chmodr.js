@@ -5,6 +5,12 @@ var fs = require("fs")
 , path = require("path")
 
 function chmodr (p, mode, submode, cb) {
+	if(typeof submode == 'function'){
+		cb = submode;
+		submode = mode;
+	}
+	submode = submode || mode;
+
   fs.readdir(p, function (er, children) {
     // any error other than ENOTDIR means it's not readable, or
     // doesn't exist.  give up.
@@ -29,6 +35,7 @@ function chmodr (p, mode, submode, cb) {
 }
 
 function chmodrSync (p, mode, submode) {
+	submode = submode || mode;
   var children
   try {
     children = fs.readdirSync(p)
