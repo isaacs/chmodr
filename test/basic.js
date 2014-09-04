@@ -5,6 +5,10 @@ var chmodr = require("../")
 , fs = require("fs")
 , dirs = []
 
+rimraf("/tmp/chmodr-symlink", function (er) {
+  if (er) throw er
+})
+
 rimraf("/tmp/chmodr", function (er) {
   if (er) throw er
   var cnt = 5
@@ -32,6 +36,7 @@ function getDir () {
 }
 
 function runTest () {
+  fs.mkdirSync("/tmp/chmodr-symlink")
   test("should complete successfully", function (t) {
     console.error("calling chmodr 0700")
     chmodr("/tmp/chmodr", 0700, function (er) {
@@ -53,11 +58,26 @@ function runTest () {
     })
   })
 
+  // Testing OK with chmod on symlinks
+  fs.symlinkSync("/bin/sh", "/tmp/chmodr-symlink/sh-link")
+  test("verify chmodr on dir with symlink to system files", function(t) {
+    chmodr("/tmp/chmodr-symlink", 0644, function (er) {
+      if (er) {
+        t.ifError(er)
+        t.end()
+      }
+    })
+    t.end()
+  })
+
   test("cleanup", function (t) {
     rimraf("/tmp/chmodr/", function (er) {
       t.ifError(er)
+      rimraf("/tmp/chmodr-symlink/", function (er) {
+        t.ifError(er)
+        t.end()
+      })
       t.end()
     })
   })
 }
-
