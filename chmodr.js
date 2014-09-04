@@ -18,7 +18,13 @@ function chmodr (p, mode, cb) {
     var len = children.length
     var errState = null
     children.forEach(function (child) {
-      chmodr(path.resolve(p, child), mode, then)
+      var path_child = path.resolve(p, child);
+      fs.lstat(path_child, function(er, stats) {
+        if (er)
+          return cb(er)
+        if (!stats.isSymbolicLink())
+          chmodr(path_child, mode, then)
+      })
     })
     function then (er) {
       if (errState) return
@@ -39,7 +45,10 @@ function chmodrSync (p, mode) {
   if (!children.length) return fs.chmodSync(p, dirMode(mode))
 
   children.forEach(function (child) {
-    chmodrSync(path.resolve(p, child), mode)
+    var path_child = path.resolve(p, child)
+    var stats = fs.lstatSync(path_child)
+    if (!stats.isSymbolicLink())
+      chmodrSync(path_child, mode)
   })
   return fs.chmodSync(p, dirMode(mode))
 }
