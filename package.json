@@ -16,5 +16,8 @@
   "scripts": {
     "test": "tap test/*.js"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "files": [
+    "chmodr.js"
+  ]
 }
