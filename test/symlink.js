@@ -15,7 +15,6 @@ function runTest () {
   fs.symlinkSync("/bin/sh", "dir/sh-link")
 
   test("should complete successfully", function (t) {
-    console.error("calling chmodr 0700")
     chmodr("dir", 0700, function (er) {
       t.ifError(er)
       t.end()

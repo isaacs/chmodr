@@ -30,7 +30,6 @@ function getDir () {
 
 function runTest () {
   test("should complete successfully", function (t) {
-    console.error("calling chmodr 0700")
     chmodr.sync("/tmp/chmodr", 0700)
     t.end()
   })
