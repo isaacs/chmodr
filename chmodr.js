@@ -20,20 +20,28 @@ function chmodrDir (p, mode, cb) {
   fs.readdir(p, function (er, children) {
     if (er)
       return cb(er)
+
     if (!children.length)
       return fs.chmod(p, dirMode(mode), cb)
+
     var len = children.length
     var errState = null
     children.forEach(function (child) {
       chmodr(path.resolve(p, child), mode, then)
     })
+
+    // return first error, but not until all are finished,
+    // so we don't keep performing FS operations after the cb
     function then (er) {
-      if (errState)
-        return
-      if (er)
-        return cb(errState = er)
-      if (-- len === 0)
-        return fs.chmod(p, dirMode(mode), cb)
+      len = len - 1
+      if (er && !errState)
+        errState = er
+      if (len === 0) {
+        if (errState)
+          return cb(errState)
+        else
+          return fs.chmod(p, dirMode(mode), cb)
+      }
     }
   })
 }
