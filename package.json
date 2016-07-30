@@ -9,9 +9,9 @@
   },
   "main": "chmodr.js",
   "devDependencies": {
-    "mkdirp": "0.3",
+    "mkdirp": "0.5.1",
     "rimraf": "",
-    "tap": "^1.3.2"
+    "tap": "^6.2.0"
   },
   "scripts": {
     "test": "tap test/*.js"
