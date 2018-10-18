@@ -27,6 +27,15 @@ const dirMode = mode => {
   return mode
 }
 
+const chmodFileOrSymlink = (p, mode, cb) => {
+  fs[LCHMOD](p, mode, (er) => {
+    // EACCES on lchmod means it's a readonly file
+    // so we fallback to chmod; in other cases, give up
+    if (fs.lchmod && er && er.code === 'EACCES')
+      return fs.chmod(p, mode, cb)
+    return cb(er)
+  })
+}
 
 const chmodrKid = (p, child, mode, cb) => {
   if (typeof child === 'string')
@@ -44,7 +53,7 @@ const chmodrKid = (p, child, mode, cb) => {
       fs.chmod(path.resolve(p, child.name), dirMode(mode), cb)
     })
   } else
-    fs[child.isSymbolicLink() ? LCHMOD : 'chmod'](path.resolve(p, child.name), mode, cb)
+    chmodFileOrSymlink(path.resolve(p, child.name), mode, cb)
 }
 
 
@@ -53,7 +62,7 @@ const chmodr = (p, mode, cb) => {
     // any error other than ENOTDIR means it's not readable, or
     // doesn't exist.  give up.
     if (er && er.code !== 'ENOTDIR') return cb(er)
-    if (er) return chmodrKid(p, '.', mode, cb)
+    if (er) return chmodFileOrSymlink(p, mode, cb)
     if (!children.length) return fs.chmod(p, dirMode(mode), cb)
 
     let len = children.length
@@ -68,6 +77,18 @@ const chmodr = (p, mode, cb) => {
   })
 }
 
+const chmodFileOrSymlinkSync = (p, mode) => {
+  try {
+    return fs[LCHMODSYNC](p, mode)
+  } catch (er) {
+    // EACCES on lchmod means it's a readonly file
+    // so we fallback to chmod; in other cases, give up
+    if (fs.lchmodSync && er && er.code === 'EACCES')
+      return fs.chmodSync(p, mode)
+    throw er
+  }
+}
+
 const chmodrKidSync = (p, child, mode) => {
   if (typeof child === 'string') {
     const stats = fs.lstatSync(path.resolve(p, child))
@@ -79,7 +100,7 @@ const chmodrKidSync = (p, child, mode) => {
     chmodrSync(path.resolve(p, child.name), mode)
     fs.chmodSync(path.resolve(p, child.name), dirMode(mode))
   } else
-    fs[child.isSymbolicLink() ? LCHMODSYNC : 'chmodSync'](path.resolve(p, child.name), mode)
+    chmodFileOrSymlinkSync(path.resolve(p, child.name), mode)
 }
 
 const chmodrSync = (p, mode) => {
@@ -87,7 +108,7 @@ const chmodrSync = (p, mode) => {
   try {
     children = readdirSync(p, { withFileTypes: true })
   } catch (er) {
-    if (er && er.code === 'ENOTDIR') return chmodrKidSync(p, '.', mode)
+    if (er && er.code === 'ENOTDIR') return chmodFileOrSymlinkSync(p, mode)
     throw er
   }
 
