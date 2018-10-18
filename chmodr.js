@@ -27,6 +27,7 @@ const dirMode = mode => {
   return mode
 }
 
+
 const chmodrKid = (p, child, mode, cb) => {
   if (typeof child === 'string')
     return fs.lstat(path.resolve(p, child), (er, stats) => {
@@ -43,7 +44,7 @@ const chmodrKid = (p, child, mode, cb) => {
       fs.chmod(path.resolve(p, child.name), dirMode(mode), cb)
     })
   } else
-    fs[LCHMOD](path.resolve(p, child.name), mode, cb)
+    fs[child.isSymbolicLink() ? LCHMOD : 'chmod'](path.resolve(p, child.name), mode, cb)
 }
 
 
@@ -52,7 +53,7 @@ const chmodr = (p, mode, cb) => {
     // any error other than ENOTDIR means it's not readable, or
     // doesn't exist.  give up.
     if (er && er.code !== 'ENOTDIR') return cb(er)
-    if (er) return fs[LCHMOD](p, mode, cb)
+    if (er) return chmodrKid(p, '.', mode, cb)
     if (!children.length) return fs.chmod(p, dirMode(mode), cb)
 
     let len = children.length
@@ -78,7 +79,7 @@ const chmodrKidSync = (p, child, mode) => {
     chmodrSync(path.resolve(p, child.name), mode)
     fs.chmodSync(path.resolve(p, child.name), dirMode(mode))
   } else
-    fs[LCHMODSYNC](path.resolve(p, child.name), mode)
+    fs[child.isSymbolicLink() ? LCHMODSYNC : 'chmodSync'](path.resolve(p, child.name), mode)
 }
 
 const chmodrSync = (p, mode) => {
@@ -86,7 +87,7 @@ const chmodrSync = (p, mode) => {
   try {
     children = readdirSync(p, { withFileTypes: true })
   } catch (er) {
-    if (er && er.code === 'ENOTDIR') return fs[LCHMODSYNC](p, mode)
+    if (er && er.code === 'ENOTDIR') return chmodrKidSync(p, '.', mode)
     throw er
   }
 
