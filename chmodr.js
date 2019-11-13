@@ -75,8 +75,8 @@ const chmodrKidSync = (p, child, mode) => {
   }
 
   if (child.isDirectory()) {
-    chmodrSync(path.resolve(p, child.name), mode)
     fs.chmodSync(path.resolve(p, child.name), dirMode(mode))
+    chmodrSync(path.resolve(p, child.name), mode)
   } else
     fs[LCHMODSYNC](path.resolve(p, child.name), mode)
 }
