@@ -1,26 +1,30 @@
 {
-  "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
   "name": "chmodr",
-  "description": "like `chmod -R`",
   "version": "1.2.0",
+  "files": [
+    "chmodr.js"
+  ],
+  "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
+  "description": "like `chmod -R`",
   "repository": {
     "type": "git",
-    "url": "git://github.com/isaacs/chmodr.git"
+    "url": "git+https://github.com/isaacs/chmodr.git"
   },
   "main": "chmodr.js",
   "devDependencies": {
     "mkdirp": "0.3",
     "rimraf": "",
-    "tap": "^12.0.1"
+    "tap": "^15.1.6"
   },
   "scripts": {
-    "test": "tap test/*.js --cov",
+    "test": "tap",
+    "snap": "tap",
     "preversion": "npm test",
     "postversion": "npm publish",
-    "postpublish": "git push origin --all; git push origin --tags"
+    "prepublishOnly": "git push origin --follow-tags"
   },
   "license": "ISC",
-  "files": [
-    "chmodr.js"
-  ]
+  "tap": {
+    "check-coverage": true
+  }
 }
