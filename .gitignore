@@ -3,8 +3,7 @@
 /.*
 
 !/bin
-!/lib
-!/doc{s,}
+!/src
 !/package.json
 !/package-lock.json
 !/README.md
@@ -22,3 +21,5 @@
 !/coverage-map.js
 !/map.js
 !/index.js
+!/LICENSE*
+!/.tshy

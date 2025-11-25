@@ -10,21 +10,51 @@
     "type": "git",
     "url": "git+https://github.com/isaacs/chmodr.git"
   },
-  "main": "chmodr.js",
+  "main": "./dist/commonjs/index.js",
   "devDependencies": {
-    "mkdirp": "0.3",
-    "rimraf": "",
-    "tap": "^15.1.6"
+    "mkdirp": "^3.0.1",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.1.2",
+    "tap": "^21.1.6",
+    "tshy": "^3.1.0",
+    "typedoc": "^0.28.14"
   },
   "scripts": {
-    "test": "tap",
-    "snap": "tap",
     "preversion": "npm test",
     "postversion": "npm publish",
-    "prepublishOnly": "git push origin --follow-tags"
+    "prepublishOnly": "git push origin --follow-tags",
+    "prepare": "tshy",
+    "pretest": "npm run prepare",
+    "presnap": "npm run prepare",
+    "test": "tap",
+    "snap": "tap",
+    "format": "prettier --write . --log-level warn",
+    "typedoc": "typedoc"
   },
-  "license": "ISC",
-  "tap": {
-    "check-coverage": true
+  "license": "BlueOak-1.0.0",
+  "type": "module",
+  "tshy": {
+    "exports": {
+      "./package.json": "./package.json",
+      ".": "./src/index.ts"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    }
+  },
+  "types": "./dist/commonjs/index.d.ts",
+  "module": "./dist/esm/index.js",
+  "engines": {
+    "node": ">=18"
   }
 }
