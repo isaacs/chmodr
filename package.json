@@ -12,6 +12,7 @@
   },
   "main": "./dist/commonjs/index.js",
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "mkdirp": "^3.0.1",
     "prettier": "^3.6.2",
     "rimraf": "^6.1.2",
