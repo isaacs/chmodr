@@ -2,7 +2,7 @@
   "name": "chmodr",
   "version": "2.0.0",
   "files": [
-    "chmodr.js"
+    "dist"
   ],
   "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
   "description": "like `chmod -R`",
