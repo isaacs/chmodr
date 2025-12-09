@@ -3,8 +3,12 @@ import * as path from 'node:path'
 import * as fsp from 'node:fs/promises'
 
 /* c8 ignore start */
-const LCHMOD = 'lchmod' in fs ? 'lchmod' : 'chmod'
-const LCHMODSYNC = 'lchmodSync' in fs ? 'lchmodSync' : 'chmodSync'
+const LCHMOD =
+  'lchmod' in fs && typeof fs.lchmod === 'function' ? 'lchmod' : 'chmod'
+const LCHMODSYNC =
+  'lchmodSync' in fs && typeof fs.lchmodSync === 'function' ?
+    'lchmodSync'
+  : 'chmodSync'
 /* c8 ignore stop */
 
 // If a party has r, add x

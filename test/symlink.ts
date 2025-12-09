@@ -3,6 +3,10 @@ import { chmodr, chmodrSync } from '../src/index.js'
 import t from 'tap'
 import { resolve } from 'path'
 
+// Windows is weird with modes
+const MODEMASK = process.platform === 'win32' ? 0o600 : 0o777
+const MODEEXPECT = process.platform === 'win32' ? 0o600 : 0o700
+
 t.test('async', async t => {
   const dir = resolve(
     t.testdir({
@@ -13,8 +17,8 @@ t.test('async', async t => {
     'dir',
   )
 
-  await chmodr(dir, 0o700)
-  t.equal(statSync(dir).mode & 0o777, 0o700)
+  await chmodr(dir, MODEEXPECT)
+  t.equal(statSync(dir).mode & MODEMASK, MODEEXPECT)
   await chmodr(dir, 0o644)
   t.pass('completed successfully (do not expect mode to change)')
 })
@@ -29,8 +33,8 @@ t.test('sync', t => {
     'dir',
   )
 
-  chmodrSync(dir, 0o700)
-  t.equal(statSync(dir).mode & 0o777, 0o700)
+  chmodrSync(dir, MODEEXPECT)
+  t.equal(statSync(dir).mode & MODEMASK, MODEEXPECT)
   chmodrSync(dir, 0o644)
   t.pass('completed successfully (do not expect mode to change)')
   t.end()

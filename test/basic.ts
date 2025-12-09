@@ -3,6 +3,10 @@ import { chmodr, chmodrSync } from '../src/index.js'
 import t, { type Test } from 'tap'
 import { resolve } from 'path'
 
+// Windows is weird with modes
+const MODEMASK = process.platform === 'win32' ? 0o600 : 0o777
+const MODEEXPECT = process.platform === 'win32' ? 0o600 : 0o700
+
 const getDirs = (t: Test) => {
   t.testdir({
     a: {
@@ -25,9 +29,9 @@ const verify = (t: Test, dirs: string[]) => {
   for (const dir of dirs) {
     t.test('verify ' + dir, async t => {
       t.equal(
-        statSync(resolve(root, dir)).mode & 0o777,
-        0o700,
-        'should be mode 0o700',
+        statSync(resolve(root, dir)).mode & MODEMASK,
+        MODEEXPECT,
+        `should be mode 0o${MODEEXPECT.toString(8)}`,
       )
     })
   }
@@ -35,13 +39,13 @@ const verify = (t: Test, dirs: string[]) => {
 
 t.test('async', async t => {
   const dirs = getDirs(t)
-  await chmodr(t.testdirName, 0o700)
+  await chmodr(t.testdirName, MODEEXPECT)
   verify(t, dirs)
 })
 
 t.test('sync', t => {
   const dirs = getDirs(t)
-  chmodrSync(t.testdirName, 0o700)
+  chmodrSync(t.testdirName, MODEEXPECT)
   verify(t, dirs)
   t.end()
 })
