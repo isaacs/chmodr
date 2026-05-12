@@ -2,6 +2,8 @@
 /*
 /.*
 
+!/typedoc.json
+!/.oxlintrc.json
 !/.prettier*
 !/bin
 !/src
